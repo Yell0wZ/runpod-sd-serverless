@@ -1,6 +1,6 @@
 torch
 transformers
 diffusers
-runpod
+runpod[serverless]
 accelerate
 Pillow

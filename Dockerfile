@@ -16,5 +16,5 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy all app files
 COPY . .
 
-# Use RunPod's entrypoint
+# Use RunPod's Serverless entrypoint
 CMD ["runpod", "serverless", "start"]
