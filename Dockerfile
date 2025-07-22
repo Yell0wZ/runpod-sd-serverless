@@ -9,11 +9,12 @@ RUN apt-get update && apt-get install -y \
 # Set workdir
 WORKDIR /app
 
-# Copy files
+# Copy requirements and install
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Copy all app files
 COPY . .
 
-# RunPod requires this handler
-CMD ["python", "handler.py"]
+# Use RunPod's entrypoint
+CMD ["runpod", "serverless", "start"]
