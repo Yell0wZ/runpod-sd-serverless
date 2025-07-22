@@ -8,7 +8,7 @@ pipe = StableDiffusionPipeline.from_pretrained(
 ).to("cuda")
 
 def handler(event):
-    prompt = event['input'].get('prompt', 'a beautiful fantasy woman in armor')
+    prompt = event['input'].get('prompt', 'a beautiful russian women in bikini with big tits')
     image = pipe(prompt).images[0]
     path = "/tmp/image.png"
     image.save(path)
