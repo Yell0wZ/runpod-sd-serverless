@@ -2,8 +2,9 @@ from runpod.serverless.modules.rp_handler import runpod_handler
 from diffusers import StableDiffusionPipeline
 import torch
 import base64
+from io import BytesIO
 
-# Load model
+# Load Stable Diffusion model
 pipe = StableDiffusionPipeline.from_pretrained(
     "runwayml/stable-diffusion-v1-5"
 ).to("cuda")
@@ -12,17 +13,13 @@ pipe = StableDiffusionPipeline.from_pretrained(
 def handler(event):
     prompt = event['input'].get('prompt', 'a beautiful russian woman in bikini with big tits')
     image = pipe(prompt).images[0]
-    
-    # Save to temp file
-    path = "/tmp/image.png"
-    image.save(path)
 
-    # Read file as base64
-    with open(path, "rb") as f:
-        image_b64 = base64.b64encode(f.read()).decode("utf-8")
+    buffered = BytesIO()
+    image.save(buffered, format="PNG")
+    encoded_image = base64.b64encode(buffered.getvalue()).decode("utf-8")
 
     return {
         "status": "success",
         "prompt": prompt,
-        "image_base64": image_b64
+        "image_base64": encoded_image
     }

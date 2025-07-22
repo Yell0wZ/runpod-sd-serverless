@@ -1,4 +1,5 @@
 torch
-diffusers[torch]
 transformers
+diffusers
 runpod
+accelerate
