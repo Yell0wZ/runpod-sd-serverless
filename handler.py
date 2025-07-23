@@ -1,5 +1,5 @@
 import runpod
-from runpod.serverless.utils.rp_logger import RunPodLogger   # <‑‑ חדש
+from runpod.serverless.modules.rp_logger import RunPodLogger
 from diffusers import StableDiffusionPipeline
 import torch, base64
 from io import BytesIO
