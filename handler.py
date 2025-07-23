@@ -12,6 +12,8 @@ pipe = StableDiffusionPipeline.from_pretrained(
     torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32
 ).to("cuda" if torch.cuda.is_available() else "cpu")
 
+pipe.safety_checker = lambda images, **kwargs: (images, False)
+
 def handler(job):
     prompt = job["input"].get("prompt", "a beautiful landscape")
     log.info(f"Prompt: {prompt}")
