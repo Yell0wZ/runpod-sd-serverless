@@ -8,6 +8,7 @@ log = RunPodLogger()
 
 pipe = StableDiffusionPipeline.from_pretrained(
     "runwayml/stable-diffusion-v1-5",
+    cache_dir="/app/models",
     torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32
 ).to("cuda" if torch.cuda.is_available() else "cpu")
 
