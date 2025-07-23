@@ -1,6 +1,8 @@
-torch
-transformers
+# סדר חשוב – Pillow קודם ל‑diffusers
+torch==2.3.0          # או הגרסה שתואמת לכרטיס A40 / CUDA 12
+transformers>=4.40.0
 Pillow
-diffusers
+diffusers>=0.27.0
 accelerate
-runpod[serverless]
+runpod[serverless]    # כולל את CLI הנחוץ
+safetensors
