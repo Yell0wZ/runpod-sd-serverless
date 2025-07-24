@@ -9,7 +9,8 @@ log = RunPodLogger()
 pipe = StableDiffusionPipeline.from_pretrained(
     "SG161222/Realistic_Vision_V6.0_B1_noVAE",
     cache_dir="/app/models",
-    torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32
+    torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32,
+    use_safetensors=True
 ).to("cuda" if torch.cuda.is_available() else "cpu")
 
 pipe.safety_checker = None
@@ -22,8 +23,10 @@ def handler(job):
     image = pipe(
         prompt, 
         num_inference_steps=30,
-        guidance_scale=7.0,
-        negative_prompt="cartoon, anime, painting, drawing, illustration, digital art"
+        guidance_scale=7.5,
+       negative_prompt = "cartoon,  drawing, CGI, 3D, plastic, blurry, painting, unrealistic",
+        height=512,
+        width=512
     ).images[0]
     buf = BytesIO()
     image.save(buf, format="PNG")
