@@ -10,7 +10,7 @@ RUN apt-get update && apt-get install -y \
 WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
-RUN pip install --no-cache-dir "diffusers[torch]==0.24.0" transformers peft safetensors accelerate
+RUN pip install --no-cache-dir --upgrade diffusers transformers peft safetensors accelerate huggingface_hub
 
 # --- Create model folders -------------------------------------------------
 RUN mkdir -p /app/models/lora
