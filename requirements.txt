@@ -1,8 +1,9 @@
-# סדר חשוב – Pillow קודם ל‑diffusers
-torch>=2.6.0          # Updated for security vulnerability fix
+# סדר חשוב
+torch>=2.6.0
 transformers>=4.40.0
 Pillow
 diffusers>=0.27.0
 accelerate
-runpod[serverless]    # כולל את CLI הנחוץ
-safetensors
+peft
+safetensors>=0.3.1
+runpod[serverless]

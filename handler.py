@@ -1,56 +1,45 @@
-import runpod
-from runpod.serverless.modules.rp_logger import RunPodLogger
 from diffusers import StableDiffusionPipeline
-import torch, base64
+import torch, base64, runpod
+from runpod.serverless.modules.rp_logger import RunPodLogger
 from io import BytesIO
 
 log = RunPodLogger()
+device = "cuda" if torch.cuda.is_available() else "cpu"
 
 pipe = StableDiffusionPipeline.from_pretrained(
     "SG161222/Realistic_Vision_V6.0_B1_noVAE",
-    cache_dir="/app/models",
-    torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32
-).to("cuda" if torch.cuda.is_available() else "cpu")
+    vae="stabilityai/sd-vae-ft-mse-original",   # VAE לשיפור צבעים
+    torch_dtype=torch.float16,
+).to(device)
 
 pipe.safety_checker = None
 pipe.requires_safety_checker = False
 
 def handler(job):
-    prompt = job["input"].get("prompt", "a beautiful landscape")
-    lora_model = job["input"].get("lora_model", None)
-    lora_scale = job["input"].get("lora_scale", 0.8)
-    
-    log.info(f"Prompt: {prompt}")
-    
-    # Load LoRA if specified
-    if lora_model:
-        try:
-            pipe.load_lora_weights(lora_model)
-            log.info(f"Loaded LoRA: {lora_model}")
-        except Exception as e:
-            log.error(f"Failed to load LoRA {lora_model}: {e}")
+    prompt      = job["input"].get("prompt", "RAW photo of a woman, dslr")
+    lora_path   = job["input"].get("lora_model")   # ‎/app/models/lora/my.safetensors
+    lora_scale  = float(job["input"].get("lora_scale", 0.8))
 
-    image = pipe(
-        prompt, 
+    if lora_path:
+        pipe.load_lora_weights(lora_path, adapter_name="dyn")
+        log.info(f"Loaded LoRA {lora_path}")
+
+    img = pipe(
+        prompt,
+        height=896, width=896,                 # רזולוציה מומלצת
         num_inference_steps=30,
-        guidance_scale=7.5,
-        negative_prompt = "cartoon,  drawing, CGI, 3D, plastic, blurry, painting, unrealistic",
-        height=768,
-        width=512,
-        cross_attention_kwargs={"scale": lora_scale} if lora_model else {}
+        guidance_scale=6.0,
+        negative_prompt=("ugly, blurry, deformed, poorly drawn hands, bad anatomy, "
+                         "cartoon, 3d, jpeg artifacts"),
+        cross_attention_kwargs={"scale": lora_scale} if lora_path else None
     ).images[0]
-    
-    # Unload LoRA after generation
-    if lora_model:
-        try:
-            pipe.unload_lora_weights()
-        except:
-            pass
-    buf = BytesIO()
-    image.save(buf, format="PNG")
-    encoded = base64.b64encode(buf.getvalue()).decode()
 
-    return {"status": "success", "image_base64": encoded}
+    if lora_path:
+        pipe.unload_lora_weights()             # משחרר VRAM
+
+    buf = BytesIO(); img.save(buf, format="PNG")
+    return {"status": "success",
+            "image_base64": base64.b64encode(buf.getvalue()).decode()}
 
 if __name__ == "__main__":
     runpod.serverless.start({"handler": handler})
