@@ -18,16 +18,35 @@ pipe.requires_safety_checker = False
 
 def handler(job):
     prompt = job["input"].get("prompt", "a beautiful landscape")
+    lora_model = job["input"].get("lora_model", None)
+    lora_scale = job["input"].get("lora_scale", 0.8)
+    
     log.info(f"Prompt: {prompt}")
+    
+    # Load LoRA if specified
+    if lora_model:
+        try:
+            pipe.load_lora_weights(lora_model)
+            log.info(f"Loaded LoRA: {lora_model}")
+        except Exception as e:
+            log.error(f"Failed to load LoRA {lora_model}: {e}")
 
     image = pipe(
         prompt, 
         num_inference_steps=30,
         guidance_scale=7.5,
-       negative_prompt = "cartoon,  drawing, CGI, 3D, plastic, blurry, painting, unrealistic",
-        height=512,
-        width=512
+        negative_prompt = "cartoon,  drawing, CGI, 3D, plastic, blurry, painting, unrealistic",
+        height=768,
+        width=512,
+        cross_attention_kwargs={"scale": lora_scale} if lora_model else {}
     ).images[0]
+    
+    # Unload LoRA after generation
+    if lora_model:
+        try:
+            pipe.unload_lora_weights()
+        except:
+            pass
     buf = BytesIO()
     image.save(buf, format="PNG")
     encoded = base64.b64encode(buf.getvalue()).decode()
