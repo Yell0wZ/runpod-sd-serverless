@@ -15,9 +15,8 @@ RUN pip install --no-cache-dir "diffusers[torch]==0.24.0" transformers peft safe
 # --- Create model folders -------------------------------------------------
 RUN mkdir -p /app/models/lora
 
-# --- Preload base model and VAE -------------------------------------------
-RUN python -c "from diffusers import StableDiffusionPipeline; StableDiffusionPipeline.from_pretrained('SG161222/Realistic_Vision_V6.0_B1_noVAE', cache_dir='/app/models')"
-RUN python -c "from diffusers import AutoencoderKL; AutoencoderKL.from_pretrained('stabilityai/sd-vae-ft-mse-original', cache_dir='/app/models')"
+# --- Preload FLUX model ---------------------------------------------------
+RUN python -c "from diffusers import FluxPipeline; FluxPipeline.from_pretrained('black-forest-labs/FLUX.1-schnell', cache_dir='/app/models')"
 
 # --- Copy App Code --------------------------------------------------------
 COPY . .

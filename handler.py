@@ -1,4 +1,4 @@
-from diffusers import StableDiffusionPipeline
+from diffusers import FluxPipeline
 import torch, base64, runpod
 from runpod.serverless.modules.rp_logger import RunPodLogger
 from io import BytesIO
@@ -6,10 +6,9 @@ from io import BytesIO
 log = RunPodLogger()
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
-pipe = StableDiffusionPipeline.from_pretrained(
-    "SG161222/Realistic_Vision_V6.0_B1_noVAE",
-    vae="stabilityai/sd-vae-ft-mse-original",   # VAE לשיפור צבעים
-    torch_dtype=torch.float16,
+pipe = FluxPipeline.from_pretrained(
+    "black-forest-labs/FLUX.1-schnell",
+    torch_dtype=torch.bfloat16,
 ).to(device)
 
 pipe.safety_checker = None
@@ -26,12 +25,10 @@ def handler(job):
 
     img = pipe(
         prompt,
-        height=896, width=896,                 # רזולוציה מומלצת
-        num_inference_steps=30,
-        guidance_scale=6.0,
-        negative_prompt=("ugly, blurry, deformed, poorly drawn hands, bad anatomy, "
-                         "cartoon, 3d, jpeg artifacts"),
-        cross_attention_kwargs={"scale": lora_scale} if lora_path else None
+        height=1024, width=1024,               # FLUX optimal resolution
+        num_inference_steps=4,                 # FLUX.1-schnell is optimized for 4 steps
+        guidance_scale=0.0,                    # FLUX.1-schnell doesn't use guidance
+        generator=torch.Generator("cpu").manual_seed(42)
     ).images[0]
 
     if lora_path:
