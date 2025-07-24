@@ -12,7 +12,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # --- Pre-download Stable Diffusion model ----------------------------------
-RUN python -c "from diffusers import StableDiffusionPipeline; StableDiffusionPipeline.from_pretrained('SG161222/Realistic_Vision_V6.0_B1_noVAE', cache_dir='/app/models', use_safetensors=True)"
+RUN python -c "from diffusers import StableDiffusionPipeline; StableDiffusionPipeline.from_pretrained('SG161222/Realistic_Vision_V6.0_B1_noVAE', cache_dir='/app/models')"
 
 # --- App code --------------------------------------------------------------
 COPY . .

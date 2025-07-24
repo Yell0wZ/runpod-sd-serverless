@@ -9,8 +9,7 @@ log = RunPodLogger()
 pipe = StableDiffusionPipeline.from_pretrained(
     "SG161222/Realistic_Vision_V6.0_B1_noVAE",
     cache_dir="/app/models",
-    torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32,
-    use_safetensors=True
+    torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32
 ).to("cuda" if torch.cuda.is_available() else "cpu")
 
 pipe.safety_checker = None
