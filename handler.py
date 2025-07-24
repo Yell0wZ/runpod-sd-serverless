@@ -12,13 +12,19 @@ pipe = StableDiffusionPipeline.from_pretrained(
     torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32
 ).to("cuda" if torch.cuda.is_available() else "cpu")
 
-pipe.safety_checker = lambda images, **kwargs: (images, [False] * len(images))
+pipe.safety_checker = None
+pipe.requires_safety_checker = False
 
 def handler(job):
     prompt = job["input"].get("prompt", "a beautiful landscape")
     log.info(f"Prompt: {prompt}")
 
-    image = pipe(prompt).images[0]
+    image = pipe(
+        prompt, 
+        num_inference_steps=30,
+        guidance_scale=7.0,
+        negative_prompt="cartoon, anime, painting, drawing, illustration, digital art"
+    ).images[0]
     buf = BytesIO()
     image.save(buf, format="PNG")
     encoded = base64.b64encode(buf.getvalue()).decode()
