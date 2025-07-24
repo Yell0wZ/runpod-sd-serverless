@@ -8,6 +8,7 @@ device = "cuda" if torch.cuda.is_available() else "cpu"
 
 pipe = FluxPipeline.from_pretrained(
     "black-forest-labs/FLUX.1-schnell",
+    cache_dir="/app/models",
     torch_dtype=torch.bfloat16,
 ).to(device)
 

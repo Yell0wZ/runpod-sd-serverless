@@ -15,8 +15,7 @@ RUN pip install --no-cache-dir --upgrade diffusers transformers peft safetensors
 # --- Create model folders -------------------------------------------------
 RUN mkdir -p /app/models/lora
 
-# --- Preload FLUX model ---------------------------------------------------
-RUN python -c "from diffusers import FluxPipeline; FluxPipeline.from_pretrained('black-forest-labs/FLUX.1-schnell', cache_dir='/app/models')"
+# --- Note: FLUX model will be downloaded at runtime due to size ---
 
 # --- Copy App Code --------------------------------------------------------
 COPY . .
