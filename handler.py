@@ -1,4 +1,4 @@
-from diffusers import FluxPipeline
+from diffusers import StableDiffusionPipeline
 import torch, base64, runpod
 from runpod.serverless.modules.rp_logger import RunPodLogger
 from io import BytesIO
@@ -6,10 +6,10 @@ from io import BytesIO
 log = RunPodLogger()
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
-pipe = FluxPipeline.from_pretrained(
-    "black-forest-labs/FLUX.1-schnell",
+pipe = StableDiffusionPipeline.from_pretrained(
+    "HiDream-ai/HiDream-I1-Dev",
     cache_dir="/app/models",
-    torch_dtype=torch.bfloat16,
+    torch_dtype=torch.float16,
 ).to(device)
 
 pipe.safety_checker = None
@@ -26,9 +26,10 @@ def handler(job):
 
     img = pipe(
         prompt,
-        height=1024, width=1024,               # FLUX optimal resolution
-        num_inference_steps=4,                 # FLUX.1-schnell is optimized for 4 steps
-        guidance_scale=0.0,                    # FLUX.1-schnell doesn't use guidance
+        height=768, width=768,                 # Standard SD resolution
+        num_inference_steps=25,
+        guidance_scale=7.0,
+        negative_prompt="blurry, low quality, distorted, deformed, ugly",
         generator=torch.Generator("cpu").manual_seed(42)
     ).images[0]
 
