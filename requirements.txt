@@ -1,5 +1,5 @@
 # סדר חשוב – Pillow קודם ל‑diffusers
-torch==2.3.0          # או הגרסה שתואמת לכרטיס A40 / CUDA 12
+torch>=2.6.0          # Updated for security vulnerability fix
 transformers>=4.40.0
 Pillow
 diffusers>=0.27.0
