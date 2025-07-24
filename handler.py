@@ -10,6 +10,8 @@ pipe = StableDiffusionPipeline.from_pretrained(
     "HiDream-ai/HiDream-I1-Dev",
     cache_dir="/app/models",
     torch_dtype=torch.float16,
+    low_cpu_mem_usage=True,
+    use_safetensors=True
 ).to(device)
 
 pipe.safety_checker = None
