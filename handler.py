@@ -41,5 +41,5 @@ def handler(job):
     return {"status": "success",
             "image_base64": base64.b64encode(buf.getvalue()).decode()}
 
-if __name__ == "__main__":
+
     runpod.serverless.start({"handler": handler})
