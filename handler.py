@@ -10,8 +10,7 @@ pipe = StableDiffusionPipeline.from_pretrained(
     "flux-ml/flux-diffusion-xl",
     cache_dir="/app/models",
     torch_dtype=torch.float16,
-    low_cpu_mem_usage=True,
-    use_safetensors=True
+    low_cpu_mem_usage=True
 ).to(device)
 
 pipe.safety_checker = None
@@ -28,10 +27,10 @@ def handler(job):
 
     img = pipe(
         prompt,
-        height=768, width=768,                 # Standard SD resolution
-        num_inference_steps=25,
-        guidance_scale=7.0,
-        negative_prompt="blurry, low quality, distorted, deformed, ugly",
+        height=1024, width=1024,               # FLUX optimal resolution
+        num_inference_steps=4,                 # FLUX works best with 4 steps
+        guidance_scale=0.0,                    # FLUX doesn't use guidance scale
+        max_sequence_length=256,               # FLUX optimal sequence length
         generator=torch.Generator("cpu").manual_seed(42)
     ).images[0]
 
