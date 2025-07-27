@@ -7,7 +7,7 @@ log = RunPodLogger()
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
 pipe = StableDiffusionPipeline.from_pretrained(
-    "HiDream-ai/HiDream-I1-Dev",
+    "flux-ml/flux-diffusion-xl",
     cache_dir="/app/models",
     torch_dtype=torch.float16,
     low_cpu_mem_usage=True,
