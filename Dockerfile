@@ -17,8 +17,7 @@ RUN pip install --no-cache-dir -r requirements.txt && \
 # --- Create model folders -------------------------------------------------
 RUN mkdir -p /app/models/lora
 
-# --- Preload flux-diffusion-xl model --------------------------------------
-RUN python -c "from diffusers import StableDiffusionPipeline; StableDiffusionPipeline.from_pretrained('flux-ml/flux-diffusion-xl', cache_dir='/app/models')"
+# --- Note: flux-diffusion-xl model will be downloaded at runtime ---
 
 # --- Copy App Code --------------------------------------------------------
 COPY . .
