@@ -1,10 +1,26 @@
 from diffusers import FluxPipeline
-import torch, base64, runpod
+import torch, base64, runpod, os
 from runpod.serverless.modules.rp_logger import RunPodLogger
 from io import BytesIO
+from huggingface_hub import login
 
 log = RunPodLogger()
 device = "cuda" if torch.cuda.is_available() else "cpu"
+
+# Load environment variables from .env file
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
+
+# Authenticate with Hugging Face if token is available
+hf_token = os.getenv("HF_TOKEN")
+if hf_token:
+    login(token=hf_token)
+    log.info("Authenticated with Hugging Face")
+else:
+    log.warning("No HF_TOKEN found - FLUX model may not load")
 
 pipe = FluxPipeline.from_pretrained(
     "black-forest-labs/FLUX.1-schnell",
