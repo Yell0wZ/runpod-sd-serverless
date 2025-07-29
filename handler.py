@@ -58,4 +58,4 @@ def handler(job):
             "image_base64": base64.b64encode(buf.getvalue()).decode()}
 
 
-    runpod.serverless.start({"handler": handler})
+runpod.serverless.start({"handler": handler})

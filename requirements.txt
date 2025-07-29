@@ -1,5 +1,5 @@
 # סדר חשוב
-torch>=2.6.0
+torch>=2.0.0
 transformers>=4.40.0
 Pillow
 diffusers>=0.30.0
